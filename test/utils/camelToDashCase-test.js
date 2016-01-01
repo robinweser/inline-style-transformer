@@ -6,7 +6,7 @@ describe('Converting camel case to dash case', () => {
     expect(camelToDashCase('fontSize')).to.eql('font-size')
     expect(camelToDashCase('borderLeftWidth')).to.eql('border-left-width')
   })
-  it('sould add an additional - for vendor-prefixes', () => {
+  it('should add an additional - for vendor-prefixes', () => {
     expect(camelToDashCase('WebkitFlexDirection')).to.eql('-webkit-flex-direction')
     expect(camelToDashCase('msFlexDirection')).to.eql('-ms-flex-direction')
   })
