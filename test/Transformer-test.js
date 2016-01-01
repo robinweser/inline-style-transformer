@@ -2,7 +2,6 @@ import { cssifyObject, importantifyObject } from '../lib/Transformer'
 import { expect } from 'chai'
 
 describe('Converting a style object to a CSS string', () => {
-
   it('should use dash case CSS properties', () => {
     expect(cssifyObject({flexDirection: 'row'})).to.eql('flex-direction:row')
   })
@@ -27,7 +26,6 @@ describe('Converting a style object to a CSS string', () => {
 })
 
 describe('Adding important flags', () => {
-
   it('should add a flag if not set yet', () => {
     expect(importantifyObject({flexDirection: 'row'})).to.eql({
       flexDirection: 'row!important'
