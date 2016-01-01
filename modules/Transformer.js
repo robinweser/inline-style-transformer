@@ -1,24 +1,26 @@
 import camelToDashCase from './utils/camelToDashCase'
 import isUnitlessProperty from './utils/isUnitlessProperty'
+import normalizeCSS from './utils/normalizeCSS'
 
 export default {
   /**
    * Creates a valid CSS string out of an object of styles
    * @param {Object} styles - an object with CSS styles
-   * @param {boolean} importantFlag - adds an !important flag to the value
+   * @param {string} unit - unit that gets applied to number values
    */
-  cssifyObject(styles, importantFlag) {
+  cssifyObject(styles, unit = 'px') {
     // early return false if styles is not an object
     if (!styles || styles instanceof Object === false) {
       return false
     }
 
     let rules = ''
+
     Object.keys(styles).forEach(property => {
       let value = styles[property]
       if (value instanceof Object) {
         // prerender nested style objects
-        rules += camelToDashCase(property) + '{' + cssifyObject(value, importantFlag) + '}'
+        rules += camelToDashCase(property) + '{' + cssifyObject(value) + '}' // eslint-disable-line
       } else {
         if (rules !== '') {
           rules += ';'
@@ -27,20 +29,81 @@ export default {
         // automatically adds units to CSS properties that are not unitless
         // but are provided as a plain number
         if (!isUnitlessProperty(property) && !isNaN(parseFloat(value)) && isFinite(value) && value !== 0) {
-          value = value + 'px'
-        }
-
-        // add !important flag to achieve higher priority than inline styles
-        if (importantFlag && value.toString().indexOf('!important') === -1) {
-          value = value + '!important'
+          value = value + unit
         }
 
         rules += camelToDashCase(property) + ':' + value
       }
     })
 
+    return rules
+  },
+
+  /**
+   * Adds an !important flag to every value
+   * @param {Object} styles - an object with CSS styles
+   */
+  importantifyObject(styles) {
+    // early return false if styles is not an object
+    if (!styles || styles instanceof Object === false) {
+      return false
+    }
+
+    Object.keys(styles).forEach(property => {
+      const value = styles[property]
+      // add !important flag to achieve higher priority than inline styles
+      if (value.toString().indexOf('!important') === -1) {
+        styles[property] = value + '!important'
+      }
+    })
+
     return styles
   },
 
-  objectifyCSS(CSS) {}
+  /**
+   * Generates a object with CSS key-value pairs out of a CSS string
+   * @param {string} CSS - CSS string that gets objectified
+   */
+  objectifyCSS(CSS) {
+    // early return false if no CSS string is provided
+    if (!CSS || typeof CSS !== 'string') {
+      return false
+    }
+
+    const rules = {}
+
+    normalizeCSS(CSS).split(';').forEach(rule => {
+      let [property, value] = rule.split(':')
+
+      property = property.trim()
+      value = value.trim()
+
+      if (value) {
+        // convert number strings to real numbers if possible
+        // Improves usability and developer experience
+        const numberValue = parseFloat(value)
+        if (numberValue == value || numberValue == value.replace('px', '')) { // eslint-disable-line
+          value = numberValue
+        }
+
+        // mutiple values / fallback values get added to an array
+        // order stays the same
+        if (rules.hasOwnProperty(property)) {
+          let priorValue = rules[property]
+          // arrayify prior value
+          if (priorValue instanceof Array !== true) {
+            priorValue = [priorValue]
+          }
+
+          // add the new value and assign the array
+          priorValue.push(value)
+          value = priorValue
+        }
+
+        rules[property] = value
+      }
+    })
+
+    return rules
+  }
 }

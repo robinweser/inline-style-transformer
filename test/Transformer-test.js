@@ -1,4 +1,4 @@
-import { cssifyObject } from '../../lib/Transformer'
+import { cssifyObject, importantifyObject } from '../lib/Transformer'
 import { expect } from 'chai'
 
 describe('Converting a style object to a CSS string', () => {
@@ -12,6 +12,9 @@ describe('Converting a style object to a CSS string', () => {
   it('should add units to unitless values', () => {
     expect(cssifyObject({width: 10})).to.eql('width:10px')
   })
+  it('should add a custom unit to unitless values', () => {
+    expect(cssifyObject({width: 10}, 'em')).to.eql('width:10em')
+  })
   it('should not add units if the value is 0', () => {
     expect(cssifyObject({width: 0})).to.eql('width:0')
   })
@@ -19,9 +22,20 @@ describe('Converting a style object to a CSS string', () => {
     expect(cssifyObject({})).to.eql('')
   })
   it('should return an empty string if styles is not an object', () => {
-    expect(cssifyObject(12)).to.eql('')
+    expect(cssifyObject(12)).to.eql(false)
   })
-  it('should add an !important flag', () => {
-    expect(cssifyObject({color: 'red'}, true)).to.eql('color:red!important')
+})
+
+describe('Adding important flags', () => {
+
+  it('should add a flag if not set yet', () => {
+    expect(importantifyObject({flexDirection: 'row'})).to.eql({
+      flexDirection: 'row!important'
+    })
+  })
+  it('should do nothing if flag already exists', () => {
+    expect(importantifyObject({flexDirection: 'row!important'})).to.eql({
+      flexDirection: 'row!important'
+    })
   })
 })
