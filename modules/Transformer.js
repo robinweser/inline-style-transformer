@@ -1,4 +1,5 @@
 import camelToDashCase from './utils/camelToDashCase'
+import dashToCamelCase from './utils/dashToCamelCase'
 import isUnitlessProperty from './utils/isUnitlessProperty'
 import normalizeCSS from './utils/normalizeCSS'
 
@@ -8,7 +9,7 @@ export default {
    * @param {Object} styles - an object with CSS styles
    * @param {string} unit - unit that gets applied to number values
    */
-  cssifyObject(styles, unit = 'px') {
+  toCSS(styles, unit = 'px') {
     // early return false if styles is not an object
     if (!styles || styles instanceof Object === false) {
       return false
@@ -47,7 +48,7 @@ export default {
    * Adds an !important flag to every value
    * @param {Object} styles - an object with CSS styles
    */
-  importantifyObject(styles) {
+  importantify(styles) {
     // early return false if styles is not an object
     if (!styles || styles instanceof Object === false) {
       return false
@@ -68,7 +69,7 @@ export default {
    * Generates a object with CSS key-value pairs out of a CSS string
    * @param {string} CSS - CSS string that gets objectified
    */
-  objectifyCSS(CSS) {
+  toObject(CSS) {
     // early return false if no CSS string is provided
     if (!CSS || typeof CSS !== 'string') {
       return false
@@ -79,7 +80,7 @@ export default {
     normalizeCSS(CSS).split(';').forEach(rule => {
       let [property, value] = rule.split(':')
 
-      property = property.trim()
+      property = dashToCamelCase(property.trim())
       value = value.trim()
 
       if (value) {

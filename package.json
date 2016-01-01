@@ -1,7 +1,7 @@
 {
-  "name": "inline-style-transformer",
+  "name": "style-transform",
   "version": "1.0.0",
-  "description": "Transforming tools for inline style objects",
+  "description": "Transformation tools for CSS and inline styles",
   "main": "lib/Transformer.js",
   "files": [
     "LICENSE",
@@ -11,7 +11,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/rofrischmann/inline-style-transformer"
+    "url": "https://github.com/rofrischmann/style-transform"
   },
   "scripts": {
     "build": "npm run clean && babel -d lib modules",
