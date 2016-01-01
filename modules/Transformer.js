@@ -18,6 +18,10 @@ export default {
 
     Object.keys(styles).forEach(property => {
       let value = styles[property]
+      // resolve multi values passed as an array
+      if (value instanceof Array) {
+        value = value.join(';' + property + ':')
+      }
       if (value instanceof Object) {
         // prerender nested style objects
         rules += camelToDashCase(property) + '{' + cssifyObject(value) + '}' // eslint-disable-line

@@ -8,6 +8,9 @@ describe('Converting a style object to a CSS string', () => {
   it('should add semicolons between rules', () => {
     expect(cssifyObject({flexDirection: 'row', fontSize: '12px'})).to.eql('flex-direction:row;font-size:12px')
   })
+  it('should resolve multiple values', () => {
+    expect(cssifyObject({display: ['-webkit-flex', 'flex']})).to.eql('display:-webkit-flex;display:flex')
+  })
   it('should add units to unitless values', () => {
     expect(cssifyObject({width: 10})).to.eql('width:10px')
   })
