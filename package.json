@@ -1,6 +1,6 @@
 {
   "name": "style-transform",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Transformation tools for CSS and inline styles",
   "main": "lib/Transformer.js",
   "files": [

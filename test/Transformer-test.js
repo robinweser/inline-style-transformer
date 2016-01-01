@@ -26,6 +26,16 @@ describe('Converting a style object to a CSS string', () => {
   it('should return an empty string if styles is not an object', () => {
     expect(toCSS(12)).to.eql(false)
   })
+  it('should transform multiple nested objects', () => {
+    expect(toCSS({
+      selector: {
+        color: 'red'
+      },
+      selector2: {
+        color: 'green'
+      }
+    })).to.eql('selector{color:red}selector2{color:green}')
+  })
 })
 
 describe('Converting CSS strings to objects', () => {
