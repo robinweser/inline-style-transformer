@@ -16,7 +16,7 @@ npm install style-transform
 ## toCSS(styles [, unit])
 Takes a `styles` object and generates a valid CSS string. Property names get converted to dash-case and plain numbers *(if they're not unitless properties)* get a `unit` applied *(default = `px`)*.
 ```javascript
-import { toCSS } from 'inline-style-transform'
+import { toCSS } from 'style-transform'
 
 const styles = {
 	fontSize: 15,
@@ -36,7 +36,7 @@ CSS === 'font-size:15em;color:red;transform:rotate(30deg)'
 Converts a `CSS` string to a optimized javascript object. Property names get camel-cased and number values get converted to pure numbers if possible.
 
 ```javascript
-import { toObject } from 'inline-style-transform'
+import { toObject } from 'style-transform'
 
 const CSS = 'font-size:15px;color:red;transform:rotate(30deg)'
 
