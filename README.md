@@ -9,7 +9,52 @@
 ```sh
 npm install inline-style-transformer
 ```
+## cssifyObject(styles [, unit])
+Takes a `styles` object and generates a valid CSS string. Property names get converted to dash-case and plain numbers *(if they're not unitless properties)* get a `unit` applied *(default = `px`)*.
+```javascript
+import { cssifyObject } from 'inline-style-transformer'
 
+const styles = {
+	fontSize: 15,
+	color: 'red',
+	transform: 'rotate(30deg)'
+}
+
+// basic object to CSS string
+const CSS = cssifyObject(styles)
+CSS === 'font-size:15px;color:red;transform:rotate(30deg)'
+
+// custom unit transformation
+CSS = cssifyObject(styles, 'em')
+CSS === 'font-size:15em;color:red;transform:rotate(30deg)'
+```
+## objectifyCSS(CSS)
+Converts a `CSS` string to a optimized javascript object. Property names get camel-cased and number values get converted to pure numbers if possible.
+
+```javascript
+import { objectifyCSS } from 'inline-style-transformer'
+
+const CSS = 'font-size:15px;color:red;transform:rotate(30deg)'
+
+// values with px also get
+// converted to pure numbers
+const styles = objectifyCSS(CSS)
+styles === {fontSize: 15, color: 'red', transform: 'rotate(30deg)'}
+```
+#### Advanced
+You can also use the new ECMAScript 2015 template strings. This let's you effectively write CSS within javascript. <br>
+`objectifyCSS` will automatically normalize all tabs and line-breaks.
+
+```javascript
+const CSS = `
+	font-size: 15px;
+	color: red;
+	transform: rotate(30deg)
+`
+
+const styles = objectifyCSS(CSS)
+styles === {fontSize: 15, color: 'red', transform: 'rotate(30deg)'}
+```
 
 # License
 **Inline-style-transformer** is licensed under the [MIT License](http://opensource.org/licenses/MIT).<br>
