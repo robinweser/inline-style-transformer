@@ -52,6 +52,16 @@ describe('Converting CSS strings to objects', () => {
   it('should parse px values', () => {
     expect(toObject('width:50px')).to.eql({width: 50})
   })
+  it('should resolve selectors', () => {
+    expect(toObject('.class2 {color: red}.class3{color: green}')).to.eql({
+      class2: {
+        color: 'red'
+      },
+      class3: {
+        color: 'green'
+      }
+    })
+  })
 })
 
 

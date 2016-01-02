@@ -47,46 +47,61 @@ const toCSS = (styles, unit = 'px') => {
  * Generates a object with CSS key-value pairs out of a CSS string
  * @param {string} CSS - CSS string that gets objectified
  */
-const toObject = (CSS) => {
+const toObject = (str) => {
   // early return false if no CSS string is provided
-  if (!CSS || typeof CSS !== 'string') {
+  if (!str || typeof str !== 'string') {
     return false
   }
 
+  const CSS = normalizeCSS(str)
+
   const rules = {}
+  const selectors = CSS.match(/[a-z0-9 ]*{[^}]*}/g)
 
-  normalizeCSS(CSS).split(';').forEach(rule => {
-    let [property, value] = rule.split(':')
+  if (selectors && selectors.length > 1) {
+    selectors.forEach(rule => {
+      const className = rule.match(/[^{]*/)[0]
+      const styles = rule.replace(className, '')
 
-    property = dashToCamelCase(property.trim())
-    value = value.trim()
+      rules[className] = toObject(styles.substr(1, styles.length - 2))
+    })
+  } else {
+    CSS.split(';').forEach(rule => {
+      let [property, value] = rule.split(':')
 
-    if (value) {
-      // convert number strings to real numbers if possible
-      // Improves usability and developer experience
-      const numberValue = parseFloat(value)
-      if (numberValue == value || numberValue == value.replace('px', '')) { // eslint-disable-line
-        value = numberValue
-      }
+      property = dashToCamelCase(property.trim())
+      value = value.trim()
 
-      // mutiple values / fallback values get added to an array
-      // order stays the same
-      if (rules.hasOwnProperty(property)) {
-        let priorValue = rules[property]
-        // arrayify prior value
-        if (priorValue instanceof Array !== true) {
-          priorValue = [priorValue]
+      if (value) {
+        if (value.substr(0, 1) === '{') {
+          value = toObject(value)
         }
 
-        // add the new value and assign the array
-        priorValue.push(value)
-        value = priorValue
+        // convert number strings to real numbers if possible
+        // Improves usability and developer experience
+        const numberValue = parseFloat(value)
+        if (numberValue == value || numberValue == value.replace('px', '')) { // eslint-disable-line
+          value = numberValue
+        }
+
+        // mutiple values / fallback values get added to an array
+        // order stays the same
+        if (rules.hasOwnProperty(property)) {
+          let priorValue = rules[property]
+          // arrayify prior value
+          if (priorValue instanceof Array !== true) {
+            priorValue = [priorValue]
+          }
+
+          // add the new value and assign the array
+          priorValue.push(value)
+          value = priorValue
+        }
+
+        rules[property] = value
       }
-
-      rules[property] = value
-    }
-  })
-
+    })
+  }
   return rules
 }
 
