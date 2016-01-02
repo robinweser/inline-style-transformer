@@ -56,27 +56,29 @@ const toObject = (str) => {
   const CSS = normalizeCSS(str)
 
   const rules = {}
-  const selectors = CSS.match(/[a-z0-9 ]*{[^}]*}/g)
+  // this checks if the string is made of selectors
+  const selectors = CSS.match(/[.]?[a-z0-9 ]*{[^}]*}/g)
 
   if (selectors && selectors.length > 1) {
     selectors.forEach(rule => {
+      // seperate selector (className) and its styles
+      // then run the actual to Object transformation
       const className = rule.match(/[^{]*/)[0]
       const styles = rule.replace(className, '')
 
       rules[className] = toObject(styles.substr(1, styles.length - 2))
     })
   } else {
+    // splitting the rules to single statements
     CSS.split(';').forEach(rule => {
       let [property, value] = rule.split(':')
 
+      // dash-casing the property
+      // trimming both to remove padding whitespace
       property = dashToCamelCase(property.trim())
       value = value.trim()
 
       if (value) {
-        if (value.substr(0, 1) === '{') {
-          value = toObject(value)
-        }
-
         // convert number strings to real numbers if possible
         // Improves usability and developer experience
         const numberValue = parseFloat(value)
