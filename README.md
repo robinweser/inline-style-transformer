@@ -1,13 +1,14 @@
-# Transformation tools for CSS and inline styles
-[![Build Status](https://travis-ci.org/rofrischmann/style-transform.svg)](https://travis-ci.org/rofrischmann/style-transform)
-[![Code Climate](https://codeclimate.com/github/rofrischmann/style-transform/badges/gpa.svg)](https://codeclimate.com/github/rofrischmann/style-transform)
-[![npm version](https://badge.fury.io/js/style-transform.svg)](http://badge.fury.io/js/style-transform)
-![Dependencies](https://david-dm.org/rofrischmann/style-transform.svg)
+<h1 align="center"><img src="docs/res/logo.png" width=600></div>
+</h1>
+[![Build Status](https://travis-ci.org/rofrischmann/inline-style-transform.svg)](https://travis-ci.org/rofrischmann/inline-style-transform)
+[![Code Climate](https://codeclimate.com/github/rofrischmann/inline-style-transform/badges/gpa.svg)](https://codeclimate.com/github/rofrischmann/inline-style-transform)
+[![npm version](https://badge.fury.io/js/inline-style-transform.svg)](http://badge.fury.io/js/inline-style-transform)
+![Dependencies](https://david-dm.org/rofrischmann/inline-style-transform.svg)
 
 
 # Usage
 ```sh
-npm install style-transform
+npm install inline-style-transform
 ```
 ### Methods
 * [toCSS](#tocssstyles--unit)
@@ -16,7 +17,7 @@ npm install style-transform
 ## toCSS(styles [, unit])
 Takes a `styles` object and generates a valid CSS string. Property names get converted to dash-case and plain numbers *(if they're not unitless properties)* get a `unit` applied *(default = `px`)*.
 ```javascript
-import { toCSS } from 'style-transform'
+import { toCSS } from 'inline-style-transform'
 
 const styles = {
 	fontSize: 15,
@@ -36,7 +37,7 @@ CSS === 'font-size:15em;color:red;transform:rotate(30deg)'
 Converts a `CSS` string to a optimized javascript object. Property names get camel-cased and number values get converted to pure numbers if possible.
 
 ```javascript
-import { toObject } from 'style-transform'
+import { toObject } from 'inline-style-transform'
 
 const CSS = 'font-size:15px;color:red;transform:rotate(30deg)'
 
@@ -61,13 +62,13 @@ styles === {fontSize: 15, color: 'red', transform: 'rotate(30deg)'}
 ```
 
 # License
-**style-transform** is licensed under the [MIT License](http://opensource.org/licenses/MIT).<br>
+**inline-style-transform** is licensed under the [MIT License](http://opensource.org/licenses/MIT).<br>
 Documentation is licensed under [Creative Common License](http://creativecommons.org/licenses/by/4.0/).<br>
 Created with ♥ by [@rofrischmann](http://rofrischmann.de).
 
 # Contributing
 I would love to see people getting involved.<br>
-If you have a feature request please create an issue. Also if you're even improving style-transform by any kind please don't be shy and send a pull request to let everyone benefit.
+If you have a feature request please create an issue. Also if you're even improving inline-style-transform by any kind please don't be shy and send a pull request to let everyone benefit.
 
 ### Issues
 If you're having any issue please let me know as fast as possible to find a solution a hopefully fix the issue. Try to add as much information as possible such as your environment, exact case, the line of actions to reproduce the issue.
