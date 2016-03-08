@@ -34,7 +34,7 @@ const unitlessProperties = {
   strokeWidth: true
 }
 
-const prefixes = ['Webkit', 'ms', 'Moz', 'O']
+const prefixes = [ 'Webkit', 'ms', 'Moz', 'O' ]
 const getPrefixedKey = (prefix, key) => prefix + key.charAt(0).toUpperCase() + key.slice(1)
 
 // Using Object.keys here, or else the vanilla for-in loop makes IE8 go into an

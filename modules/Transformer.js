@@ -1,22 +1,14 @@
 import camelToDashCase from './utils/camelToDashCase'
 import dashToCamelCase from './utils/dashToCamelCase'
-import isUnitlessProperty from './utils/isUnitlessProperty'
-import normalizeCSS from './utils/normalizeCSS'
+import isNumber from './utils/isNumber'
 
 /**
 * Creates a valid CSS string out of an object of styles
 * @param {Object} styles - an object with CSS styles
 * @param {string} unit - unit that gets applied to number values
 */
-const toCSS = (styles, unit = 'px') => {
-  // early return false if styles is not an object
-  if (!styles || styles instanceof Object === false) {
-    return false
-  }
-
-  let rules = ''
-
-  Object.keys(styles).forEach(property => {
+export function toCSS(styles, unit = 'px') {
+  return Object.keys(styles).reduce((rules, property) => {
     let value = styles[property]
     // resolve multi values passed as an array
     if (value instanceof Array) {
@@ -24,87 +16,82 @@ const toCSS = (styles, unit = 'px') => {
     }
     if (value instanceof Object) {
       // prerender nested style objects
-      rules += camelToDashCase(property) + '{' + toCSS(value) + '}' // eslint-disable-line
+      rules += camelToDashCase(property) + '{' + toCSS(value, unit) + '}' // eslint-disable-line
     } else {
+      // add an semicolon at the end of each rule (if not the last one)
       if (rules !== '') {
         rules += ';'
       }
-
       // automatically adds units to CSS properties that are not unitless
       // but are provided as a plain number
-      if (!isUnitlessProperty(property) && !isNaN(parseFloat(value)) && isFinite(value) && value !== 0) {
+      if (isNumber(property, value)) {
         value = value + unit
       }
 
       rules += camelToDashCase(property) + ':' + value
     }
-  })
-
-  return rules
+    return rules
+  }, '')
 }
 
 /**
  * Generates a object with CSS key-value pairs out of a CSS string
  * @param {string} CSS - CSS string that gets objectified
  */
-const toObject = (str) => {
-  // early return false if no CSS string is provided
-  if (!str || typeof str !== 'string') {
-    return false
+export function toObject(CSS, replacer = { '.': '' }) {
+  // this checks if the string is made of selectors
+  const replacePrefixes = Object.keys(replacer)
+  const replacerRegExp = replacePrefixes.map(prefix => '[' + prefix + ']').join('|')
+  const selectors = CSS.match(new RegExp('(' + replacerRegExp + ')[a-z0-9 ]*{[^}]*}', 'g'))
+
+  // Resolve nested CSS selector strings
+  if (selectors && selectors.length > 0) {
+    return selectors.reduce((rules, rule) => {
+      // seperate selector (className) and its styles
+      // replace selector prefixes according the replacer settings
+      const selector = rule.match(/[^{]*/)[0]
+      const styles = rule.replace(selector, '')
+
+      const className = replacePrefixes.reduce((transformedClassName, prefix) => {
+        if (transformedClassName.indexOf(prefix) === 0) {
+          transformedClassName = transformedClassName.replace(prefix, replacer[prefix])
+        }
+        return transformedClassName
+      }, selector.trim())
+
+      // recursive objectify on pure styles string (without wrapping brackets)
+      rules[className] = toObject(styles.replace(new RegExp('{|}', 'g'), ''))
+      return rules
+    }, { })
   }
 
-  const CSS = normalizeCSS(str)
+  // splitting the rules to single statements
+  return CSS.split(';').reduce((rules, rule) => {
+    let [ property, value ] = rule.split(':')
 
-  const rules = {}
-  // this checks if the string is made of selectors
-  const selectors = CSS.match(/[.]?[a-z0-9 ]*{[^}]*}/g)
+    // trimming both to remove padding whitespace
+    value = value.trim()
 
-  if (selectors && selectors.length > 1) {
-    selectors.forEach(rule => {
-      // seperate selector (className) and its styles
-      // then run the actual to Object transformation
-      const className = rule.match(/[^{]*/)[0]
-      const styles = rule.replace(className, '')
-
-      rules[className] = toObject(styles.substr(1, styles.length - 2))
-    })
-  } else {
-    // splitting the rules to single statements
-    CSS.split(';').forEach(rule => {
-      let [property, value] = rule.split(':')
+    if (value) {
+      // convert number strings to real numbers if possible
+      // Improves usability and developer experience
+      const numberValue = parseFloat(value)
+      if (numberValue == value || numberValue == value.replace('px', '')) { // eslint-disable-line
+        value = numberValue
+      }
 
       // dash-casing the property
-      // trimming both to remove padding whitespace
       property = dashToCamelCase(property.trim())
-      value = value.trim()
 
-      if (value) {
-        // convert number strings to real numbers if possible
-        // Improves usability and developer experience
-        const numberValue = parseFloat(value)
-        if (numberValue == value || numberValue == value.replace('px', '')) { // eslint-disable-line
-          value = numberValue
-        }
-
-        // mutiple values / fallback values get added to an array
-        // order stays the same
-        if (rules.hasOwnProperty(property)) {
-          let priorValue = rules[property]
-          // arrayify prior value
-          if (priorValue instanceof Array !== true) {
-            priorValue = [priorValue]
-          }
-
-          // add the new value and assign the array
-          priorValue.push(value)
-          value = priorValue
-        }
-
-        rules[property] = value
+      // mutiple values / fallback values get added to an array
+      // while the order stays the exact same order
+      if (rules.hasOwnProperty(property)) {
+        value = [ rules[property] ].concat(value)
       }
-    })
-  }
-  return rules
+      rules[property] = value
+    }
+    return rules
+  }, { })
 }
 
 
@@ -112,25 +99,13 @@ const toObject = (str) => {
  * Adds an !important flag to every value
  * @param {Object} styles - an object with CSS styles
  */
-const importantify = (styles) => {
-  // early return false if styles is not an object
-  if (!styles || styles instanceof Object === false) {
-    return false
-  }
-
-  Object.keys(styles).forEach(property => {
+export function importantify(styles) {
+  return Object.keys(styles).reduce((importantStyles, property) => {
     const value = styles[property]
     // add !important flag to achieve higher priority than inline styles
     if (value.toString().indexOf('!important') === -1) {
-      styles[property] = value + '!important'
+      importantStyles[property] = value + '!important'
     }
-  })
-
-  return styles
-}
-
-export default {
-  toCSS,
-  toObject,
-  importantify
+    return importantStyles
+  }, styles)
 }
