@@ -1,7 +1,13 @@
 language: node_js
-sudo: true
 node_js:
-  - "5.0"
-install:
-  - npm install -g babel-cli
-  - npm install
+  - "5"
+  - "4"
+script:
+  - npm run lint
+  - npm test
+  - npm run coverage
+addons:
+  code_climate:
+    repo_token: 3debbdcdeb28e53ab0f5bca231a36ce7332c0e189a12243b23985d072755730c
+notifications:
+  email: false
