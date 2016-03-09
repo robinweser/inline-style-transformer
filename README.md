@@ -1,6 +1,7 @@
 <h1 align="center"><img src="docs/res/logo.png" width=600></div>
 </h1>
 [![Build Status](https://travis-ci.org/rofrischmann/inline-style-transformer.svg)](https://travis-ci.org/rofrischmann/inline-style-transformer)
+[![Test Coverage](https://codeclimate.com/github/rofrischmann/inline-style-transformer/badges/coverage.svg)](https://codeclimate.com/github/rofrischmann/inline-style-transformer/coverage)
 [![Code Climate](https://codeclimate.com/github/rofrischmann/inline-style-transformer/badges/gpa.svg)](https://codeclimate.com/github/rofrischmann/inline-style-transformer)
 [![npm version](https://badge.fury.io/js/inline-style-transformer.svg)](http://badge.fury.io/js/inline-style-transformer)
 ![Dependencies](https://david-dm.org/rofrischmann/inline-style-transformer.svg)
@@ -8,14 +9,15 @@
 
 # Usage
 ```sh
-npm install inline-style-transformer
+npm install inline-style-transformer --save
 ```
 ### Methods
-* [toCSS](#tocssstyles--unit)
-* [toObject](#toObjectcss)
+* [toCSS](#tocssstyles--options)
+* [toObject](#toObjectcss--options)
+* [importantify](#importantifystyles)
 
-## toCSS(styles [, unit])
-Takes a `styles` object and generates a valid CSS string. Property names get converted to dash-case and plain numbers *(if they're not unitless properties)* get a `unit` applied *(default = `px`)*.
+## `toCSS(styles [, options])`
+Takes a `styles` object and generates a valid CSS string. Property names get converted to dash-case and plain numbers *(if they're not unitless properties)* get a configurable unit applied.
 ```javascript
 import { toCSS } from 'inline-style-transformer'
 
@@ -33,7 +35,45 @@ CSS === 'font-size:15px;color:red;transform:rotate(30deg)'
 CSS = toCSS(styles, 'em')
 CSS === 'font-size:15em;color:red;transform:rotate(30deg)'
 ```
-## toObject(CSS)
+
+### Options
+#### `unit`
+*default to `px`*
+
+Add a unit which gets added to plain numbers.
+```javascript
+toCSS({width: 30}, {unit: 'em'}) === 'width:30em'
+```
+
+### `ruleSeparator`, `selectorSeparator` & `indent`
+*default to '' (empty string)*
+
+Used to format the output rules and classes.
+
+```javascript
+const styles = {
+  '.class1': {
+    fontSize: 30,
+    color: 'red'
+  }
+}
+const options = {
+  ruleSeparator: '\n',
+  selectorSeparator: '\n',
+  indent: '  ' // 2 spaces
+}
+const CSS = toCSS(styles, options)
+```
+Will output a formatted CSS string:
+```CSS
+.class1 {
+  font-size: 30px;
+  color: red
+}
+```
+
+
+## `toObject(CSS [, options])`
 Converts a `CSS` string to a optimized javascript object. Property names get camel-cased and number values get converted to pure numbers if possible.
 
 ```javascript
@@ -59,6 +99,38 @@ const CSS = `
 
 const styles = toObject(CSS)
 styles === {fontSize: 15, color: 'red', transform: 'rotate(30deg)'}
+```
+
+### Options
+##### `replacer`
+Optionally you may pass an object containing replacement rules. Those are used to transform multi-selector CSS into an object.
+
+*default is `{'.' : ''}` which replaces the CSS class prefix `.` with an empty string.*
+
+```javascript
+const CSS = `
+  .class1 {
+	  font-size: 15px;
+	  color: red;
+	  transform: rotate(30deg)
+  }
+  .class2 {
+    background-color: blue
+  }
+`
+
+const styles = toObject(CSS)
+// styles === transformed
+const transformed = {
+  class1: {
+    fontSize: 15,
+    color: 'red',
+    transform: 'rotate(30deg)'
+  },
+  class2: {
+    backgroundColor: 'blue'
+  }
+}
 ```
 
 # License
