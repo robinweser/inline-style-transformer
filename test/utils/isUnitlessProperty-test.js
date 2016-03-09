@@ -1,4 +1,4 @@
-import isUnitlessProperty from '../../lib/utils/isUnitlessProperty'
+import isUnitlessProperty from '../../modules/utils/isUnitlessProperty'
 import { expect } from 'chai'
 
 describe('Checking for unitless properties', () => {

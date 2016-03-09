@@ -1,4 +1,4 @@
-import dashToCamelCase from '../../lib/utils/dashToCamelCase'
+import dashToCamelCase from '../../modules/utils/dashToCamelCase'
 import { expect } from 'chai'
 
 describe('Converting camel case to dash case', () => {
