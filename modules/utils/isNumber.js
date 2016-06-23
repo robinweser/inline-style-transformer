@@ -1,3 +1,3 @@
-import isUnitlessProperty from './isUnitlessProperty'
+import isUnitlessCSSProperty from 'unitless-css-property'
 
-export default (property, value) => !isUnitlessProperty(property) && !isNaN(parseFloat(value)) && isFinite(value) && value !== 0
+export default (property, value) => !isUnitlessCSSProperty(property) && !isNaN(parseFloat(value)) && isFinite(value) && value !== 0

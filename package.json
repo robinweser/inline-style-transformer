@@ -1,6 +1,6 @@
 {
   "name": "inline-style-transformer",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Transformation tools for CSS and inline styles",
   "main": "lib/Transformer.js",
   "files": [
@@ -58,6 +58,10 @@
     "mocha": "^2.3.4",
     "rimraf": "^2.4.4",
     "sinon": "^1.17.2",
-    "sinon-chai": "^2.8.0"
+    "sinon-chai": "^2.8.0",
+    "unitless-css-property": "^1.0.2"
+  },
+  "dependencies": {
+    "unitless-css-property": "^1.0.2"
   }
 }
