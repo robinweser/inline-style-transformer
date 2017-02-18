@@ -1,3 +1,5 @@
+## Deprecated! There are far better solutions to these methods nowaydays. 
+
 <h1 align="center"><img src="docs/res/logo.png" width=600></div>
 </h1>
 [![Build Status](https://travis-ci.org/rofrischmann/inline-style-transformer.svg)](https://travis-ci.org/rofrischmann/inline-style-transformer)
